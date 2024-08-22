@@ -1,6 +1,6 @@
 ---
 title: "Ejercicios"
-author: "nombre"
+author: "Máximo Verdondoni"
 date: "2024-08-01"
 output: html_document
 ---
@@ -12,35 +12,42 @@ library(dplyr)
 library(ggplot2)
 ```
 
-
 ```{r carga-datos}
 atmosfera <- datos::atmosfera
 ```
 
-
-1. Graficá la relación entre la presión y la temperatura. 
-¿Es una relación lineal más o menos limpia o hay otras cosas “raras”?
+1.  Graficá la relación entre la presión y la temperatura. ¿Es una relación lineal más o menos limpia o hay otras cosas “raras”? Hasta los 780 de presión, hay una tendencia positiva no lineal Luego de los 780 de presión no hay una asociación clara entre presión y temperatura
 
 ```{r}
-
+atmosfera |>
+  ggplot(aes(presion, temperatura)) +
+  geom_point()
 ```
 
+2.  Calculá la temperatura media de cada mes y visualizalo en un gráfico de líneas.(Es decir, el ciclo anual promedio de temperatura). ¿Cómo describirías el ciclo anual en pocas palabras?
 
-2. Calculá la temperatura media de cada mes y visualizalo en un gráfico de líneas.(Es decir, el ciclo anual promedio de temperatura). ¿Cómo describirías el ciclo anual en pocas palabras?
+Podemos ver que la temperatura media aumentó a medida que nos acercamos al 2000. Algunos meses tuvieron una variación similar durante los años.
 
 ```{r}
-
+atmosfera |>
+  group_by(anio, mes) |>
+  summarise(temperatura_media = mean(temperatura)) |>
+  ggplot(aes(anio, temperatura_media)) +
+  geom_point(aes(color = factor(mes))) +
+  geom_line(aes(group = mes, color = factor(mes)))
 ```
 
+3.  Calculá lo mismo pero para cada hemisferio. Graficalo con una línea de distinto color para cada hemisferio. (Ayudas: La función sign() devuelve el signo de una variable; en el hemisferio sur la latitud es negativa y en el hemisferio norte, positiva. Acordate del tema de los grupos y las líneas.)
 
-3. Calculá lo mismo pero para cada hemisferio. Graficalo con una línea de distinto color para cada hemisferio. 
-(Ayudas: La función sign() devuelve el signo de una variable; en el hemisferio sur la latitud es negativa y en el hemisferio norte, positiva. 
-Acordate del tema de los grupos y las líneas.)
-
-¿Cómo cambia tu descripción del ciclo anual ahora?
+¿Cómo cambia tu descripción del ciclo anual ahora? -Podemos ver que los meses de mayor y menor temperaturas son inversos entre hemisferios -El hemisferio sur tiene una mayor variabilidad en sus temperatura mensuales a partir de 1996 -El hemisferio norte parece sufrir mas la variabilidad de temperaturas mensuales con el pasar los años -El hemisferio sur no tiene muchos cambios de temperatura media en comparación al hemisferio norte
 
 ```{r}
-
+atmosfera |>
+  mutate(hemisferio = ifelse(latitud < 0, "Sur","Norte")) |>
+  group_by(anio, mes, hemisferio) |>
+  summarise(temperatura_media = mean(temperatura)) |>
+  ggplot(aes(anio, temperatura_media)) +
+  geom_point(aes(color = factor(mes))) +
+  geom_line(aes(group = mes, color = factor(mes))) +
+  facet_wrap(~hemisferio)
 ```
-
-
