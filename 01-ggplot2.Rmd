@@ -84,7 +84,11 @@ millas |>
 ```{r}
 millas |>
   ggplot(aes(ciudad, autopista)) +
-  geom_point()
+  geom_jitter(aes(color = (ciudad == 15 & autopista == 20)))
+
+millas |>
+  filter(ciudad == 15 & autopista == 20) |>
+  count()
 ```
 
 
